@@ -1,19 +1,21 @@
 <?php
 include '../config/ConnectionDB.php';
 include '../models/Usuario.php';
+
 class UsuarioRepository {
 
-    public function doLogin($email, $password): Usuario | null {
+    public function getUserByEmailPass($email, $password): Usuario | null {
         $connection = ConnectionDB::getInstance()->getConnection();
-
+        
         $sql = "SELECT * FROM usuario WHERE email = '$email'";
         $usuario = null;
 
         try {
             $resultado = $connection->query($sql);
-
+            
             if($resultado->rowCount() > 0) {
                 $resultados = $resultado->fetchAll(PDO::FETCH_ASSOC);
+                
                 $usuario = new Usuario();
                 $usuario->cargarDesdeArreglo( $resultados[0] );
 
@@ -45,7 +47,14 @@ class UsuarioRepository {
             $stmt->bindParam(':password', $passwordHash);
             $stmt->bindParam(':id_distrito', $datos["id_distrito"]);
             $stmt->bindParam(':id_nivel', $datos["id_nivel"]);
-            $stmt->bindParam(':foto', $datos["foto"], PDO::PARAM_LOB);
+
+    
+
+            if (isset($datos["foto"])) {
+                $stmt->bindParam(':foto', $datos["foto"], PDO::PARAM_LOB);
+            } else {
+                $stmt->bindValue(':foto', null, PDO::PARAM_NULL);
+            }
 
             if ($stmt->execute()) {
                 return true;
@@ -57,5 +66,36 @@ class UsuarioRepository {
             return false;
         }
     }
+
+    public function updateUsuario($id, $datos): bool {
+        $connection = ConnectionDB::getInstance()->getConnection();
+        $sql = "UPDATE usuario SET nombre = :nombre, apellido = :apellido, email = :email, foto = :foto WHERE id = :id";
+        
+        try {
+            $stmt = $connection->prepare($sql);
+    
+            $stmt->bindParam(':nombre', $datos["nombre"]);
+            $stmt->bindParam(':apellido', $datos["apellido"]);
+            $stmt->bindParam(':email', $datos["email"]);
+            $stmt->bindParam(':id', $id);
+    
+            // Verifica si se proporcionó una foto
+            if (isset($datos["foto"])) {
+                $stmt->bindParam(':foto', $datos["foto"], PDO::PARAM_LOB);
+            } else {
+                $stmt->bindValue(':foto', null, PDO::PARAM_NULL);
+            }
+    
+            if ($stmt->execute()) {
+                return true;
+            }
+    
+            return false;
+        } catch (PDOException $exception) {
+            echo $exception->getMessage();
+            return false;
+        }
+    }
+    
 
 }

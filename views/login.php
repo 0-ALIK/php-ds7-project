@@ -1,18 +1,17 @@
 <?php
 include '../controllers/AuthController.php';
 
-$controller = new AuthController();
+$authController = new AuthController();
 $error = null;
 
-if ( isset($_GET['login']) ) {
+if( isset($_GET['login']) ) {
 
     if (isset($_POST['email']) && isset($_POST['password'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
-
+    
         if (!empty($email) && !empty($password)) {
-            
-            $controller->login($email, $password);
+            $authController->login($email, $password);
 
         } else {
             $error = 'Los campos no pueden estar vacios';
@@ -36,11 +35,12 @@ if ( isset($_GET['login']) ) {
     <title>Login</title>
 </head>
 <body>
-
+    
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title text-center">Inicio de Sesión</h2>
+                
                 <form action="./login.php?login=" method="POST">
                     <?php 
                     if (!is_null($error)) {
@@ -62,6 +62,8 @@ if ( isset($_GET['login']) ) {
                         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                     </div>
                 </form>
+
+
             </div>
         </div>
     </div>

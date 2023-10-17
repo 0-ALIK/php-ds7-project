@@ -5,20 +5,14 @@ include '../repositories/DistritoRepository.php';
 include '../repositories/NivelRepository.php';
 /* include '../repositories/UsuarioRepository.php'; */
 
-$controller = new AuthController();
+$authController = new AuthController();
 $provinciaRepository = new ProvinciaRepository();
-$distritoRespository = new DistritoRepository();
 $nivelRepository = new NivelRepository();
 $usuarioRepository = new UsuarioRepository();
 
-if( isset($_GET['provincia_valor']) ) {
-    $valor = $_GET['provincia_valor'];
-    $data = $distritoRespository->getAllById($valor);
-    echo json_encode($data);
-    exit;
-}
 
 if( isset($_GET['registro']) ) {
+
     if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["id_provincia"]) && isset($_POST["id_distrito"]) && isset($_POST["id_nivel"])) {
 
         $datos = array(
@@ -26,7 +20,6 @@ if( isset($_GET['registro']) ) {
             "apellido" => $_POST["apellido"],
             "email" => $_POST["email"],
             "password" => $_POST["password"],
-            "id_provincia" => $_POST["id_provincia"],
             "id_distrito" => $_POST["id_distrito"],
             "id_nivel" => $_POST["id_nivel"]
         );
@@ -36,7 +29,7 @@ if( isset($_GET['registro']) ) {
             $datos["foto"] = file_get_contents($archivo_tmp);
         }
 
-        $controller->register( $datos );
+        $authController->register( $datos );
         
     } else {
         // Algunos campos del formulario están ausentes, maneja el error de acuerdo a tus necesidades
@@ -135,7 +128,7 @@ if( isset($_GET['registro']) ) {
         </div>
     </div>
 
-    <script src="../js/register.js"></script>
+    <script src="../js/fill-select-distrito.js"></script>
 
 </body>
 </html>

@@ -11,9 +11,11 @@ class AuthController {
      */
     public function login($email, $password) {
         $usuarioRepository = new UsuarioRepository();
-        $usuario = $usuarioRepository->doLogin($email, $password);
+        $usuario = $usuarioRepository->getUserByEmailPass($email, $password);
 
         if( !is_null($usuario) ) {
+            session_start();
+            $_SESSION['usuario'] = serialize( $usuario );
             header('refresh:0;url=dashboard.php');
             exit;
         }

@@ -1,13 +1,13 @@
 <?php
 class Usuario {
-    public $id_usuario;
-    public $nombre;
-    public $apellido;
-    public $email;
-    public $password;
-    public $foto;
-    public $id_nivel;
-    public $id_distrito;
+    private $id_usuario;
+    private $nombre;
+    private $apellido;
+    private $email;
+    private $password;
+    private $foto;
+    private $id_nivel;
+    private $id_distrito;
 
     // Getter para id_usuario
     public function getIdUsuario() {
