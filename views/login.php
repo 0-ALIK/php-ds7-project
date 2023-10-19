@@ -1,5 +1,5 @@
 <?php
-include '../controllers/AuthController.php';
+require_once '../controllers/AuthController.php';
 
 $authController = new AuthController();
 $error = null;
@@ -43,9 +43,15 @@ if( isset($_GET['login']) ) {
                 
                 <form action="./login.php?login=" method="POST">
                     <?php 
-                    if (!is_null($error)) {
+                    if(!is_null($error)) {
                         echo "<p class='text-danger'>$error</p>";
-                    }                        
+                    }
+
+                    if(isset($_GET['mensaje']) && isset($_GET['tipo'])) {
+                        $mensaje = $_GET['mensaje'];
+                        $tipo = $_GET['tipo'];
+                        echo "<p class='text-$tipo'>$mensaje</p>";
+                    }
                     ?>
 
                     <div class="mb-3">

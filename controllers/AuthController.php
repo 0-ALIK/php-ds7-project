@@ -1,5 +1,6 @@
 <?php
-include '../repositories/UsuarioRepository.php';
+require_once '../repositories/UsuarioRepository.php';
+
 class AuthController {
 
     /**
@@ -20,7 +21,7 @@ class AuthController {
             exit;
         }
 
-        header('refresh:0;url=login.php');
+        header('refresh:0;url=login.php?mensaje=Credenciales incorrectas&tipo=danger');
         exit;
     }
 
@@ -29,11 +30,11 @@ class AuthController {
         $usuarioRepository = new UsuarioRepository();
 
         if( $usuarioRepository->insertUsuario( $data ) ) {
-            header('refresh:0;url=login.php');
+            header('refresh:0;url=login.php?mensaje=Registro exitoso&tipo=info');
             exit;        
         }
 
-        header('refresh:0;url=register.php');
+        header('refresh:0;url=register.php?mensaje=Registro fallido&tipo=danger');
         exit;    
     }
 

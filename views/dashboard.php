@@ -1,10 +1,16 @@
 <?php
-include '../models/Usuario.php';
-include '../controllers/UserController.php';
+require_once '../models/Usuario.php';
+require_once '../controllers/UserController.php';
+require_once '../repositories/ProvinciaRepository.php';
+require_once '../repositories/DistritoRepository.php';
+require_once '../repositories/NivelRepository.php';
 
 session_start();
 
 $userController = new UserController();
+$provinciaRepository = new ProvinciaRepository();
+$distritoRespository = new DistritoRepository();
+$provincias = $provinciaRepository->getAll();
 
 if( !isset($_SESSION['usuario']) ) {
     echo 'Acceso denegado, serás redirigido en 3 segundos...';
@@ -17,22 +23,33 @@ $usuario = unserialize( $_SESSION['usuario'] );
 if( isset($_GET['update']) ) {
 
     if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["email"])) {
-
         $datos = array(
             "nombre" => $_POST["nombre"],
             "apellido" => $_POST["apellido"],
             "email" => $_POST["email"],
         );
 
-        if (isset($_FILES["foto"])) {
+        if (isset($_FILES["foto"]) && !empty($_FILES["foto"])) {
             $archivo_tmp = $_FILES['foto']['tmp_name'];
             $datos["foto"] = file_get_contents($archivo_tmp);
         }
 
         $userController->updateUser($usuario->getIdUsuario(), $datos);
-
     }
 }
+
+if( isset($_GET['agregar_provincia']) ) {
+    if(isset($_POST['nombre'])) {
+        $provinciaRepository->insertProvincia( $_POST['nombre'] );
+    }
+}
+
+if( isset($_GET['agregar_distrito']) ) {
+    if(isset($_POST['id_provincia']) && isset($_POST['nombre'])) {
+        $distritoRespository->inserDistrito( $_POST['id_provincia'], $_POST['nombre'] );
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -53,10 +70,55 @@ if( isset($_GET['update']) ) {
         <div class="row">
             <div class="col-md-6">
                 
-                <img src='data:image/jpeg;base64,<?= base64_encode($usuario->getFoto()) ?>' alt='Foto de Perfil' class='img-fluid rounded-circle' style='max-width: 200px;'>
+                <div class="card">
+                    <div class="card-body">
+                        <?php
+                        $imagenUser = 'data:image/jpeg;base64,'.base64_encode( $usuario->getFoto() );
+                        if(!is_null($imagenUser)) {
+                            echo "<img src='data:image/jpeg;base64,". base64_encode($usuario->getFoto()). "' alt='Foto de Perfil' class='img-fluid rounded-circle' style='max-width: 200px;'>";
+                        } else {
+                            echo "<img src='../' alt='Foto de Perfil' class='img-fluid rounded-circle' style='max-width: 200px;'>";
+                        }
+                        ?>
+
+                        <form action="./dashboard.php?agregar_provincia=" method="post">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre de la provincia</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre">
+                            </div>
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-primary">Agregar provincia</button>
+                            </div>
+                        </form>
+
+                        <form action="./dashboard.php?agregar_distrito=" method="post">
+                            <div class="mb-3">
+                                <label for="id_provincia" class="form-label">Provincia (Seleccionar)</label>
+                                <select class="form-control" id="id_provincia" name="id_provincia" required>
+                                    <option value="">-- seleciona una provincia --</option>
+                                    <?php
+                                    foreach( $provincias as $provincia ) {
+                                        echo "<option value='".$provincia['id_provincia']."'>".$provincia['nom_provincia']."</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre del distrito</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre">
+                            </div>
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-primary">Agregar distrito</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
                 
             </div>
+
             <div class="col-md-6">
+
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title text-center">Bienvenido al sistema <?=$usuario->getNombre()?></h2>
@@ -79,6 +141,38 @@ if( isset($_GET['update']) ) {
                             </div>
 
                             <div class="mb-3">
+                                <label for="id_provincia" class="form-label">Provincia (Seleccionar)</label>
+                                <select class="form-control" id="id_provincia" name="id_provincia" required>
+                                    <option value="">-- seleciona una provincia --</option>
+                                    <?php
+                                    foreach( $provincias as $provincia ) {
+                                        echo "<option value='".$provincia['id_provincia']."'>".$provincia['nom_provincia']."</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_distrito" class="form-label">Distrito (Seleccionar)</label>
+                                <select class="form-control" id="id_distrito" name="id_distrito" required></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_nivel" class="form-label">Nivel (Seleccionar)</label>
+                                <select class="form-control" id="id_nivel" name="id_nivel" required>
+                                    <option value="">-- seleciona un nivel --</option>
+                                    <?php
+                                    $nivelRepository = new NivelRepository();
+                                    $niveles = $nivelRepository->getAll();
+
+                                    foreach( $niveles as $nivel ) {
+                                        echo "<option value='".$nivel['id_nivel']."'>".$nivel['nom_nivel']."</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="foto" class="form-label">Foto (Subir archivo)</label>
                                 <input type="file" class="form-control" id="foto" name="foto">
                             </div>
@@ -87,11 +181,15 @@ if( isset($_GET['update']) ) {
                                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <script src="../js/fill-select-distrito.js"></script>
     
 </body>
 </html>

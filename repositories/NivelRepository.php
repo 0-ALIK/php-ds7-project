@@ -1,4 +1,6 @@
 <?php
+require_once '../config/ConnectionDB.php';
+
 class NivelRepository {
 
     public function getAll(): array {

@@ -1,4 +1,6 @@
 <?php
+require_once '../config/ConnectionDB.php';
+
 class ProvinciaRepository {
     
     public function getAll(): array {
@@ -16,6 +18,19 @@ class ProvinciaRepository {
         } catch (PDOException $exception) {
             
             return [];
+        }
+    }
+
+    public function insertProvincia( $nom_provincia ) {
+        $connection = ConnectionDB::getInstance()->getConnection();
+        $sql = "INSERT INTO Provincia (nom_provincia) VALUES (:nombre)";
+
+        try {
+            $stmt = $connection->prepare($sql);
+            $stmt->bindParam("nombre", $nom_provincia);
+            return $stmt->execute();
+        } catch (\Throwable $th) {
+            return false;
         }
     }
 }

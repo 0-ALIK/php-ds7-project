@@ -1,9 +1,9 @@
 <?php
-include '../controllers/AuthController.php';
-include '../repositories/ProvinciaRepository.php';
-include '../repositories/DistritoRepository.php';
-include '../repositories/NivelRepository.php';
-/* include '../repositories/UsuarioRepository.php'; */
+require_once '../controllers/AuthController.php';
+require_once '../repositories/ProvinciaRepository.php';
+require_once '../repositories/DistritoRepository.php';
+require_once '../repositories/NivelRepository.php';
+require_once '../repositories/UsuarioRepository.php';
 
 $authController = new AuthController();
 $provinciaRepository = new ProvinciaRepository();
@@ -59,6 +59,13 @@ if( isset($_GET['registro']) ) {
                         <h2 class="card-title text-center">Registro de Usuario</h2>
 
                         <form action="./registro.php?registro=" method="POST" enctype="multipart/form-data">
+                            <?php                            
+                            if(isset($_GET['mensaje']) && isset($_GET['tipo'])) {
+                                $mensaje = $_GET['mensaje'];
+                                $tipo = $_GET['tipo'];
+                                echo "<p class='text-$tipo'>$mensaje</p>";
+                            }
+                            ?>
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre" required>

@@ -1,6 +1,6 @@
 <?php
-include '../config/ConnectionDB.php';
-include '../models/Usuario.php';
+require_once '../config/ConnectionDB.php';
+require_once '../models/Usuario.php';
 
 class UsuarioRepository {
 
@@ -23,6 +23,27 @@ class UsuarioRepository {
                     echo "no pasa";
                     $usuario = null;
                 }
+            }
+
+            return $usuario;
+        } catch (PDOException $exception) {
+            echo $exception->getMessage();
+            return null;
+        }
+    }
+
+    public function getById( $id ): Usuario | null {
+        $connection = ConnectionDB::getInstance()->getConnection();
+        $sql = "SELECT * FROM usuario WHERE id_usuario = $id";
+        $usuario = null;
+
+        try {
+            $resultado = $connection->query($sql);
+
+            if($resultado->rowCount() > 0) {
+                $resultados = $resultado->fetchAll(PDO::FETCH_ASSOC);    
+                $usuario = new Usuario();
+                $usuario->cargarDesdeArreglo( $resultados[0] );
             }
 
             return $usuario;
@@ -69,7 +90,7 @@ class UsuarioRepository {
 
     public function updateUsuario($id, $datos): bool {
         $connection = ConnectionDB::getInstance()->getConnection();
-        $sql = "UPDATE usuario SET nombre = :nombre, apellido = :apellido, email = :email, foto = :foto WHERE id = :id";
+        $sql = "UPDATE usuario SET nombre = :nombre, apellido = :apellido, email = :email, foto = :foto WHERE id_usuario = :id";
         
         try {
             $stmt = $connection->prepare($sql);

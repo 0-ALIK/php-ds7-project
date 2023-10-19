@@ -1,6 +1,7 @@
 <?php
-include '../config/ConnectionDB.php';
-include '../repositories/DistritoRepository.php';
+require_once '../config/ConnectionDB.php';
+require_once '../repositories/DistritoRepository.php';
+
 $distritoRespository = new DistritoRepository();
 
 function responseJSON($status, $json): void {

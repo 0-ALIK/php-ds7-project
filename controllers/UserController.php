@@ -1,4 +1,5 @@
 <?php
+require_once '../repositories/UsuarioRepository.php';
 
 class UserController {
 
@@ -6,13 +7,13 @@ class UserController {
         $usuarioRepository = new UsuarioRepository();
 
         if( $usuarioRepository->updateUsuario($id, $datos) ) {
-            header('refresh:0;url=dashboard.php');
+            $_SESSION['usuario'] = serialize($usuarioRepository->getById($id));
+            header('refresh:0;url=dashboard.php?mensaje=Datos actualizados&tipo=info');
             exit;       
         }
 
-        header('refresh:0;url=dashboard.php');
-        exit;       
-
+        header('refresh:0;url=dashboard.php?mensaje=No se pudieron actualizar&tipo=danger');
+        exit;
     }
 
 }
