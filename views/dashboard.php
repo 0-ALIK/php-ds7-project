@@ -50,6 +50,10 @@ if( isset($_GET['agregar_distrito']) ) {
     }
 }
 
+if( isset($_GET['cambiar_pass']) )  {
+    $userController->cambiarPass($usuario->getEmail());
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +69,8 @@ if( isset($_GET['agregar_distrito']) ) {
 </head>
 <body>
     <h1>Dashboard</h1>
+
+    <a href="./dashboard-usuarios.php">Ver usarios</a>
 
     <div class="container mt-5">
         <div class="row">
@@ -142,7 +148,7 @@ if( isset($_GET['agregar_distrito']) ) {
 
                             <div class="mb-3">
                                 <label for="id_provincia" class="form-label">Provincia (Seleccionar)</label>
-                                <select class="form-control" id="id_provincia" name="id_provincia" required>
+                                <select class="form-control" id="id_provincia" name="id_provincia">
                                     <option value="">-- seleciona una provincia --</option>
                                     <?php
                                     foreach( $provincias as $provincia ) {
@@ -154,12 +160,12 @@ if( isset($_GET['agregar_distrito']) ) {
 
                             <div class="mb-3">
                                 <label for="id_distrito" class="form-label">Distrito (Seleccionar)</label>
-                                <select class="form-control" id="id_distrito" name="id_distrito" required></select>
+                                <select class="form-control" id="id_distrito" name="id_distrito"></select>
                             </div>
 
                             <div class="mb-3">
                                 <label for="id_nivel" class="form-label">Nivel (Seleccionar)</label>
-                                <select class="form-control" id="id_nivel" name="id_nivel" required>
+                                <select class="form-control" id="id_nivel" name="id_nivel">
                                     <option value="">-- seleciona un nivel --</option>
                                     <?php
                                     $nivelRepository = new NivelRepository();
@@ -180,6 +186,8 @@ if( isset($_GET['agregar_distrito']) ) {
                             <div class="text-center mt-3">
                                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                             </div>
+
+                            <a class="my-2" href="./dashboard.php?cambiar_pass">Cambiar contraseña</a>
                         </form>
 
                     </div>

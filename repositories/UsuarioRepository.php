@@ -94,6 +94,7 @@ class UsuarioRepository {
         
         try {
             $stmt = $connection->prepare($sql);
+            
     
             $stmt->bindParam(':nombre', $datos["nombre"]);
             $stmt->bindParam(':apellido', $datos["apellido"]);
@@ -115,6 +116,18 @@ class UsuarioRepository {
         } catch (PDOException $exception) {
             echo $exception->getMessage();
             return false;
+        }
+    }
+
+    public function getAll(): Array {
+        $connection = ConnectionDB::getInstance()->getConnection();
+        $sql = "SELECT * FROM usuario";
+
+        try {
+            $resultado = $connection->query($sql);
+            return $resultado->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            return [];
         }
     }
     
